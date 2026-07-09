@@ -14,7 +14,13 @@ describe(PLUGIN_NAME .. ": (unit)", function()
   local fake_jwt = "fake-jwt-token"
   local time = 0
 
+  local old_kong
+  local old_http_new
+
   setup(function()
+    old_kong = _G.kong
+    old_http_new = http.new
+
     _G.kong = {  
       log = {
         inspect = function(...) print(...) end, 
@@ -75,6 +81,11 @@ describe(PLUGIN_NAME .. ": (unit)", function()
     plugin = require("kong.plugins."..PLUGIN_NAME..".handler")
   end)
 
+  teardown(function()
+    _G.kong = old_kong
+    http.new = old_http_new
+  end)
+
   before_each(function()
     exited_status = nil
     auth_server_url = nil
@@ -107,7 +118,7 @@ describe(PLUGIN_NAME .. ": (unit)", function()
   end)
 
   it("normal request with upstream_jwt_header_name", function()
-    config.upstream_jwt_header_name = "upstream_jwt_header_name"
+    config.upstream_jwt_header_name = "X-Upstream-Jwt"
     plugin:access(config)
     
     assert.is_nil(exited_status) 
@@ -117,7 +128,7 @@ describe(PLUGIN_NAME .. ": (unit)", function()
 
   it("normal request with cache_ttl", function()
     config.cache_ttl = 10
-    config.upstream_jwt_header_name = "upstream_jwt_header_name"
+    config.upstream_jwt_header_name = "X-Upstream-Jwt"
     plugin:access(config)
     
     assert.is_nil(exited_status) 

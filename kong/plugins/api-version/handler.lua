@@ -94,7 +94,7 @@ local function fetch_remote_auth(url, header_name, header_value)
   end
 
   local jwt_token
-  if res.status == 200 and res.body then
+  if res.status == 200 and type(res.body) == "string" and res.body ~= "" then
     local body_json = cjson.decode(res.body)
     if body_json and body_json.jwt then
       jwt_token = body_json.jwt

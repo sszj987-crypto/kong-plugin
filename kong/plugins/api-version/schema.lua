@@ -14,6 +14,10 @@ local schema = {
         -- The 'config' record is the custom part of the plugin schema
         type = "record",
         fields = {
+          { request_header = typedefs.header_name {
+              default = "Hello-World" } },
+          { response_header = typedefs.header_name {
+              default = "Bye-World" } },
           {  auth_server_url = typedefs.url {
                 required = true,
             }},
@@ -35,7 +39,6 @@ local schema = {
           {
             upstream_jwt_header_name = {
                 type = "string",
-                default = "X-JWT",
                 required = false,
             }},
         },
